@@ -1,69 +1,96 @@
-# get_chinese_name
-中文起名工具，支持古诗文取名。内置诗经，论语，唐诗，宋词，楚辞，周易。支持自定义文章取词。
-# 简介
-只关注名字好不好听，不关注八字吉凶。
+# PiPiName
+
+根据三才五格，从诗经、楚辞、论语、周易、唐诗、宋词给宝宝取名。
+
 # 使用方法
-**1.安装所有第三方库**
+
+## 1. 安装第三方库
+
+安装繁简体转换库 OpenCC：
+
 ```
-pip install opencc-python-reimplemented
+pip install opencc
 ```
-**2.调整main.py中的参数**
-```
-# 长辈姓名--删掉所有读音相同的字--例：加入“伟”，则结果中不会出现任何读音为we的字（为伟位微卫...）
-banned_list = lazy_pinyin("可悦思平笑华世永念沁建宏中人春山雨国清溪瑞峰")
 
-# 名字开头字母--删掉所有以此字母开头的字--例：加入“w”，则结果中不会出现任何拼音以w开头的字（卫瓦望卧...）
-bad_init = list("eqrsxy")
+## 2. 配置参数
 
-# 不想要的名字--删掉所有相同的字--例：加入“贵”，则结果中不会出现“贵”字
-bad_words = list("富贵民国军卫义二三四"
-                 "介少大毛伟帅攻立生田"
-                 "水火金木土才花凤龙春"
-                 "艳芳淑杰俊志强昌银婷"
-                 "丽芬发梅蛋铁铜娜宝春"
-                 "夏秋冬武力天地圣神佛"
-                 "老乾坤云")
-                 
-# 笔画数--名字的笔画总数的范围--例：王伟，名字笔画总数为6（不计姓氏）
-stroke_number = [0, 200]
+打开 config.py，进行参数配置：
 
-# 字数--名字的字数--例：王伟，字数为1
-character_number = 2
-
-# 姓--不会影响名字的生成，仅仅影响输出
-last_name = "王"
-
-# 允许叠字--例：欢欢，西西
-replicate = False
-
+```python
 # 选择词库
 # 0: "默认", 1: "诗经", 2: "楚辞", 3: "论语",
 # 4: "周易", 5: "唐诗", 6: "宋诗", 7: "宋词"
-# 8: 自定义
-name_source = 1
+name_source = 0
 
-# 是否筛选名字--仅输出默认库中存在的名字，可以删除明显不合适的名字
+# 姓，仅支持单姓
+last_name = "张"
+
+# 不想要的字，结果中不会出现这些字
+dislike_words = list("")
+
+# 最小笔画数
+min_stroke_count = 3
+
+# 最大笔画数
+max_stroke_count = 25
+
+# 允许使用中吉，开启后将生成包含中吉配置的名字，生成的名字会更多
+allow_general = False
+
+# 是否筛选名字，仅输出名字库中存在的名字，可以过滤明显不合适的名字
 name_validate = True
 
-# 是否筛选性别--仅输出与默认库中对应名字性别相同的名字--仅当开启名字筛选时有效
-filter_gender = True
+# 是否筛选性别，男/女，空则不筛选，仅当开启名字筛选时有效
+gender = ""
 
-# 性别--男/女--仅当开启名字筛选时有效
-gender = "女"
+##########################################################################
+
+# 填入姓名，查看三才五格配置，仅支持单姓复名
+# 如果要起名，请保持该值为空
+check_name = ""
+
+# 是否显示名字来源
+check_name_resource = True
 ```
 
-**3.运行后结果会输出到“names.txt”文件中**
-```
-例：
-姓名    性别  名字笔画数               取词来源
-王琼瑶   女	    26	       投我以木桃，报之以琼瑶。匪报也，永以为好也！
-王琼莹   女	    22	       俟我于庭乎而，充耳以青乎而，尚之以琼莹乎而。
-```
-# 数据来源
-* [chinese-poetry](https://github.com/chinese-poetry/chinese-poetry)
-* [chineseStroke](https://github.com/WTree/chineseStroke)
-* [Chinese-Names-Corpus](https://github.com/wainshine/Chinese-Names-Corpus)
-# 第三方库
-* [OpenCC](https://github.com/BYVoid/OpenCC)
-* json
-* re
+## 3. 运行查看结果
+
+运行 main.py 后，结果会生成在 name.text 文件，比如：
+
+> 张哲维    男  哲  维  10 14 「哲」人之愚，亦「維」斯戾。無競「維」人，四方其訓之。有覺德行，四國順之。
+> 张家宁    男  家  宁  10 14 有飶其香。邦「家」之光。有椒其馨，胡考之「寧」。匪且有且，匪今斯今，振古如茲。
+> 张怀元    男  怀  元  20 4  翩彼飛鴞，集於泮林。食我桑黮，「懷」我好音。憬彼淮夷，來獻其琛。「元」龜象齒，大賂南金。
+> 张恒寿    男  恒  寿  10 14 如月之「恆」，如日之升。如南山之「壽」，不騫不崩。如松柏之茂，無不爾或承。
+
+可以将结果粘贴在 Excel 表格，根据字或笔画进行筛选。
+
+如果是查看名字配置和来源，结果会直接打印出来，比如：
+
+> 周杰伦
+>
+> 周杰倫 8 8 10
+>
+> 天格	9
+> 人格	16	大吉
+> 地格	18	大吉
+> 总格	26	凶
+> 外格	11	大吉
+>
+> 三才	水土金	中吉
+>
+> 正在生成名字来源...
+>
+> 唐诗 自蜀奉册命往朔方途中呈韦左相文部房尚书门下崔侍郎 贾至
+> 谁谓三「杰」才，功业独殊「伦」。
+>
+> 宋诗 答赵温甫见谢茶瓯韵 彭汝砺
+>
+> 朅来东江欲学古，喜听英「杰」参吾「伦」。
+
+# 感谢
+
+- [OpenCC](https://github.com/BYVoid/OpenCC)
+- [chinese-poetry](https://github.com/chinese-poetry/chinese-poetry)
+- [chineseStroke](https://github.com/WTree/chineseStroke)
+- [Chinese-Names-Corpus]()
+- [hanzi_chaizi](https://github.com/howl-anderson/hanzi_chaizi)
