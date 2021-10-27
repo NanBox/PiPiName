@@ -4,7 +4,7 @@
 name_source = 1
 
 # 姓，仅支持单姓
-last_name = "郝"
+last_name = ""
 
 # 不想要的字，结果中不会出现这些字
 dislike_words = list("")
@@ -22,7 +22,7 @@ allow_general = False
 name_validate = True
 
 # 是否筛选性别，男/女，空则不筛选，仅当开启名字筛选时有效
-gender = "男"
+gender = ""
 
 ##############################################################################################
 
@@ -31,4 +31,4 @@ gender = "男"
 check_name = ""
 
 # 是否显示名字来源
-check_name_resource = True
+check_name_resource = False
