@@ -4,7 +4,7 @@
 name_source = 1
 
 # 姓，仅支持单姓
-last_name = "林"
+last_name = ""
 
 # 不想要的字，结果中不会出现这些字
 dislike_words = list("")
