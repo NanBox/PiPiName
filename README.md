@@ -11,7 +11,7 @@
 安装简繁体转换库 OpenCC：
 
 ```
-pip install opencc
+pip install opencc-python-reimplemented
 ```
 
 ## 2. 配置参数

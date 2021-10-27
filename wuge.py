@@ -16,7 +16,7 @@ stroke_list = list()
 def get_stroke_list(last_name, allow_general):
     print(">>计算笔画组合...")
     # 姓氏转繁体
-    converter = opencc.OpenCC('s2t.json')
+    converter = opencc.OpenCC('s2t')
     last_name = converter.convert(last_name)
     n = get_stroke_number(last_name)
     for i in range(1, 81):
@@ -96,7 +96,7 @@ def check_wuge_config(name):
     if len(name) != 3:
         return
     # 姓名转繁体
-    converter = opencc.OpenCC('s2t.json')
+    converter = opencc.OpenCC('s2t')
     complex_name = converter.convert(name)
     xing = get_stroke_number(complex_name[0])
     ming1 = get_stroke_number(complex_name[1])

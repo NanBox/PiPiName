@@ -7,9 +7,9 @@ from name import Name
 from stroke_number import get_stroke_number
 
 # 简体转繁体
-s2tConverter = opencc.OpenCC('s2t.json')
+s2tConverter = opencc.OpenCC('s2t')
 # 繁体转简体
-t2sConverter = opencc.OpenCC('t2s.json')
+t2sConverter = opencc.OpenCC('t2s')
 
 
 def get_source(source, validate, stroke_list):
