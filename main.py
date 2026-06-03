@@ -1,41 +1,61 @@
-from config import name_source, last_name, dislike_words, \
-    min_stroke_count, max_stroke_count, allow_general, name_validate, gender, \
-    check_name, check_name_resource
-from name_set import check_resource, get_source
-from wuge import check_wuge_config, get_stroke_list
+#!/usr/bin/env python3
+
+from __future__ import annotations
+
+import os
+import subprocess
+import sys
+from pathlib import Path
 
 
-def contain_bad_word(first_name):
-    for word in first_name:
-        if word in dislike_words:
-            return True
-    return False
+PROJECT_ROOT = Path(__file__).resolve().parent
+SRC_DIR = PROJECT_ROOT / "src"
+VENV_DIR = PROJECT_ROOT / ".venv"
+VENV_PYTHON = VENV_DIR / ("Scripts/python.exe" if os.name == "nt" else "bin/python")
+RUNTIME_CHECK = "import fastapi, opencc, uvicorn"
+
+if SRC_DIR.exists():
+    sys.path.insert(0, str(SRC_DIR))
 
 
-if len(check_name) == 3:
-    # 查看姓名配置
-    check_wuge_config(check_name)
-    if check_name_resource:
-        check_resource(check_name)
-    print(">>输出完毕")
-else:
-    # 起名
-    names = list()
-    with open("names.txt", "w+", encoding='utf-8') as f:
-        for i in get_source(name_source, name_validate, get_stroke_list(last_name, allow_general)):
-            if i.stroke_number1 < min_stroke_count or i.stroke_number1 > max_stroke_count or \
-                    i.stroke_number2 < min_stroke_count or i.stroke_number2 > max_stroke_count:
-                # 笔画数过滤
-                continue
-            if name_validate and gender != "" and i.gender != gender and i.gender != "双" and i.gender != "未知":
-                # 性别过滤
-                continue
-            if contain_bad_word(i.first_name):
-                # 不喜欢字过滤
-                continue
-            names.append(i)
-        print(">>输出结果...")
-        names.sort()
-        for i in names:
-            f.write(last_name + str(i) + "\n")
-        print(">>输出完毕，请查看「names.txt」文件")
+def ensure_runtime() -> None:
+    if os.environ.get("PIPINAME_NO_BOOTSTRAP") == "1":
+        return
+    if Path(sys.prefix).resolve() == VENV_DIR.resolve():
+        if not has_runtime(VENV_PYTHON):
+            install_runtime(VENV_PYTHON)
+        return
+
+    if not VENV_PYTHON.exists():
+        print("首次运行，正在创建本地运行环境 .venv ...")
+        subprocess.check_call([sys.executable, "-m", "venv", str(VENV_DIR)], cwd=PROJECT_ROOT)
+    if not has_runtime(VENV_PYTHON):
+        install_runtime(VENV_PYTHON)
+
+    env = os.environ.copy()
+    env["PIPINAME_BOOTSTRAPPED"] = "1"
+    os.execve(str(VENV_PYTHON), [str(VENV_PYTHON), str(PROJECT_ROOT / "main.py"), *sys.argv[1:]], env)
+
+
+def has_runtime(python: Path) -> bool:
+    return subprocess.run(
+        [str(python), "-c", RUNTIME_CHECK],
+        cwd=PROJECT_ROOT,
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+        check=False,
+    ).returncode == 0
+
+
+def install_runtime(python: Path) -> None:
+    print("正在安装运行依赖 ...")
+    subprocess.check_call([str(python), "-m", "pip", "install", "."], cwd=PROJECT_ROOT)
+
+
+ensure_runtime()
+
+from pipiname.cli import main
+
+
+if __name__ == "__main__":
+    raise SystemExit(main(sys.argv[1:] or ["web", "--open"], prog="./main.py"))
