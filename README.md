@@ -6,6 +6,8 @@ PiPiName 是一个本地中文取名候选工具。它根据三才五格筛选�
 
 > 结果只作为文化出处和候选筛选辅助，不承诺命理正确性，也不替代人工判断。
 
+![PiPiName Web 界面](docs/assets/pipiname-web.png)
+
 ## 安装
 
 需要先安装 Python 3.10 或更高版本。
