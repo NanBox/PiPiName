@@ -307,6 +307,7 @@ HTML_PAGE = """
       box-shadow: 0 0 0 3px rgba(31, 61, 39, 0.1);
     }
 
+
     .checkbox-group {
       display: flex;
       align-items: center;
@@ -726,7 +727,7 @@ HTML_PAGE = """
             <div class="form-row">
               <div class="form-group">
                 <label>姓氏</label>
-                <input name="last_name" value="林" maxlength="2" required placeholder="例如：林">
+                <input type="text" name="last_name" value="林" maxlength="2" required placeholder="例如：林">
               </div>
               <div class="form-group">
                 <label>期望性别</label>
@@ -771,7 +772,7 @@ HTML_PAGE = """
 
             <div class="form-group">
               <label>避讳汉字 (排除不喜欢的字)</label>
-              <input name="dislike_words" placeholder="如：病凶（无需逗号分隔）">
+              <input type="text" name="dislike_words" placeholder="如：病凶（无需逗号分隔）">
             </div>
 
             <div class="checkbox-group">
@@ -794,7 +795,7 @@ HTML_PAGE = """
           <form id="check-form">
             <div class="form-group">
               <label>待测姓名</label>
-              <input name="name" value="" placeholder="请输入 2-4 字姓名" required maxlength="4">
+              <input type="text" name="name" value="" placeholder="请输入 2-4 字姓名" required maxlength="4">
             </div>
             <div class="checkbox-group">
               <input name="with_resource" type="checkbox" id="with_resource" checked>
