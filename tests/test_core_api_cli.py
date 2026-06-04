@@ -15,6 +15,14 @@ def test_generate_shijing_returns_candidates():
     assert all(item.source_type == "shijing" for item in results)
 
 
+def test_generate_deduplicates_full_names():
+    results = generate_names(GenerateOptions(last_name="林", source="shijing", limit=200))
+    full_names = [item.full_name for item in results]
+
+    assert results
+    assert len(full_names) == len(set(full_names))
+
+
 def test_generate_filters_dislike_words():
     base = generate_names(GenerateOptions(last_name="林", source="shijing", limit=20))
     assert base

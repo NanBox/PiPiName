@@ -83,7 +83,7 @@ class NameIndex:
         source_filter = self._source_filter(options.source)
         dislike = set(options.dislike_words)
         results: list[NameCandidate] = []
-        seen: set[tuple[str, str, str, int, int]] = set()
+        seen_names: set[str] = set()
         with self.connect() as conn:
             if options.source == "default":
                 rows = self._query_default_names(conn, options, pair_values)
@@ -91,6 +91,9 @@ class NameIndex:
                     first_name = row["name_simp"]
                     if self._skip_name(first_name, dislike):
                         continue
+                    if first_name in seen_names:
+                        continue
+                    seen_names.add(first_name)
                     results.append(
                         NameCandidate(
                             full_name=options.last_name + first_name,
@@ -150,10 +153,9 @@ class NameIndex:
                     gender = row["gender"] or ""
                     if not self._gender_matches(options.gender, gender):
                         continue
-                    key = (first_name, row["source_type"], row["sentence"], row["stroke1"], row["stroke2"])
-                    if key in seen:
+                    if first_name in seen_names:
                         continue
-                    seen.add(key)
+                    seen_names.add(first_name)
                     sentence = highlight(row["sentence"], row["first_char_trad"], row["second_char_trad"])
                     results.append(
                         NameCandidate(
@@ -195,26 +197,49 @@ class NameIndex:
         rows = conn.execute(
             f"""
             select
-                s.source_type,
-                s.title,
-                s.author,
-                s.sentence,
-                nc.first_name,
-                nc.stroke1,
-                nc.stroke2,
-                nc.first_char_simp as first_char,
-                nc.second_char_simp as second_char,
-                nc.first_char_trad as first_char_trad,
-                nc.second_char_trad as second_char_trad,
-                v.gender as gender
-            from name_candidates nc
-            join valid_names v on v.name_simp = nc.first_name
-            join sources s on s.id = nc.sentence_id
-            where (nc.stroke1, nc.stroke2) in ({pairs_sql})
-              {source_filter}
-              {gender_sql}
-              {dislike_sql}
-            order by nc.sentence_id, nc.first_position, nc.second_position
+                source_type,
+                title,
+                author,
+                sentence,
+                first_name,
+                stroke1,
+                stroke2,
+                first_char,
+                second_char,
+                first_char_trad,
+                second_char_trad,
+                gender
+            from (
+                select
+                    s.source_type,
+                    s.title,
+                    s.author,
+                    s.sentence,
+                    nc.first_name,
+                    nc.stroke1,
+                    nc.stroke2,
+                    nc.first_char_simp as first_char,
+                    nc.second_char_simp as second_char,
+                    nc.first_char_trad as first_char_trad,
+                    nc.second_char_trad as second_char_trad,
+                    v.gender as gender,
+                    nc.sentence_id,
+                    nc.first_position,
+                    nc.second_position,
+                    row_number() over (
+                        partition by nc.first_name
+                        order by nc.sentence_id, nc.first_position, nc.second_position
+                    ) as row_num
+                from name_candidates nc
+                join valid_names v on v.name_simp = nc.first_name
+                join sources s on s.id = nc.sentence_id
+                where (nc.stroke1, nc.stroke2) in ({pairs_sql})
+                  {source_filter}
+                  {gender_sql}
+                  {dislike_sql}
+            )
+            where row_num = 1
+            order by sentence_id, first_position, second_position
             limit ?
             offset ?
             """,

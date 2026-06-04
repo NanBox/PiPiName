@@ -3,7 +3,12 @@ from __future__ import annotations
 import argparse
 import csv
 import json
+import os
+import shutil
+import signal
+import subprocess
 import sys
+import time
 import webbrowser
 from pathlib import Path
 
@@ -94,10 +99,64 @@ def run_web(args: argparse.Namespace) -> int:
     import uvicorn
 
     url = f"http://{args.host}:{args.port}"
+    stopped = stop_existing_web_server(args.port)
+    if stopped:
+        print(f"已停止已有 Web 服务进程: {', '.join(str(pid) for pid in stopped)}")
     if args.open:
         webbrowser.open(url)
     uvicorn.run(create_app(), host=args.host, port=args.port)
     return 0
+
+
+def stop_existing_web_server(port: int) -> list[int]:
+    if shutil.which("lsof") is None:
+        return []
+    found = subprocess.run(
+        ["lsof", "-tiTCP:" + str(port), "-sTCP:LISTEN"],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    if found.returncode not in {0, 1}:
+        return []
+    pids = sorted({int(line) for line in found.stdout.splitlines() if line.strip().isdigit()})
+    stopped: list[int] = []
+    for pid in pids:
+        if pid == os.getpid() or not is_pipiname_web_process(pid):
+            continue
+        try:
+            os.kill(pid, signal.SIGTERM)
+            stopped.append(pid)
+        except ProcessLookupError:
+            continue
+    for pid in stopped:
+        wait_for_exit(pid)
+    return stopped
+
+
+def is_pipiname_web_process(pid: int) -> bool:
+    result = subprocess.run(
+        ["ps", "-p", str(pid), "-o", "command="],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    command = result.stdout.strip()
+    return "pipiname" in command and " web " in f" {command} "
+
+
+def wait_for_exit(pid: int, timeout: float = 3.0) -> None:
+    deadline = time.monotonic() + timeout
+    while time.monotonic() < deadline:
+        try:
+            os.kill(pid, 0)
+        except ProcessLookupError:
+            return
+        time.sleep(0.1)
+    try:
+        os.kill(pid, signal.SIGKILL)
+    except ProcessLookupError:
+        return
 
 
 def format_candidates(candidates: list[NameCandidate], output_format: str) -> str:

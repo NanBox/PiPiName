@@ -1050,7 +1050,7 @@ HTML_PAGE = """
             <div class="form-row">
               <div class="form-group">
                 <label>姓氏</label>
-                <input type="text" name="last_name" value="林" maxlength="2" required placeholder="例如：林">
+                <input type="text" name="last_name" value="" maxlength="2" required placeholder="例如：林">
               </div>
               <div class="form-group">
                 <label>期望性别</label>
