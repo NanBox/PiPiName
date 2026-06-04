@@ -114,13 +114,19 @@ HTML_PAGE = """
       padding: 0;
     }
 
+    html,
+    body {
+      height: 100%;
+    }
+
     body {
       background-color: var(--color-bg);
       font-family: var(--font-sans);
       color: var(--color-text);
       line-height: 1.6;
-      padding: 24px;
-      min-height: 100vh;
+      padding: 16px 20px;
+      height: 100vh;
+      overflow: hidden;
       display: flex;
       flex-direction: column;
     }
@@ -130,9 +136,10 @@ HTML_PAGE = """
       width: 100%;
       margin: 0 auto;
       flex: 1;
+      min-height: 0;
       display: flex;
       flex-direction: column;
-      gap: 20px;
+      gap: 14px;
     }
 
     header {
@@ -140,7 +147,8 @@ HTML_PAGE = """
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 20px 28px;
+      flex: 0 0 auto;
+      padding: 14px 22px;
       background: var(--color-card-bg);
       border-radius: 12px;
       box-shadow: 0 4px 10px rgba(0, 0, 0, 0.02);
@@ -150,7 +158,7 @@ HTML_PAGE = """
     header .logo-area h1 {
       font-family: var(--font-serif);
       color: var(--color-primary);
-      font-size: 26px;
+      font-size: 24px;
       font-weight: 700;
       display: flex;
       align-items: center;
@@ -190,21 +198,65 @@ HTML_PAGE = """
 
     main {
       display: grid;
-      grid-template-columns: 350px 1fr;
-      gap: 24px;
-      align-items: start;
-    }
-
-    @media (max-width: 900px) {
-      main {
-        grid-template-columns: 1fr;
-      }
+      grid-template-columns: 340px minmax(0, 1fr);
+      gap: 20px;
+      align-items: stretch;
+      flex: 1 1 auto;
+      min-height: 0;
     }
 
     .sidebar {
       display: flex;
       flex-direction: column;
-      gap: 20px;
+      gap: 12px;
+      height: 100%;
+      min-height: 0;
+      overflow: hidden;
+      padding-right: 2px;
+    }
+
+    .health-card {
+      padding: 16px;
+      font-size: 12px;
+      color: var(--color-text-muted);
+    }
+
+    #generate-health-card {
+      margin-top: auto;
+    }
+
+    #check-health-card {
+      display: none;
+    }
+
+    .health-card-title {
+      font-weight: 700;
+      color: var(--color-primary);
+      margin-bottom: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--color-primary-light);
+      padding-bottom: 4px;
+    }
+
+    .health-status-dot {
+      width: 8px;
+      height: 8px;
+      background: #cbd5e1;
+      border-radius: 50%;
+      display: inline-block;
+    }
+
+    .health-stats {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .health-stat-value {
+      font-weight: 600;
+      color: var(--color-text);
     }
 
     .card {
@@ -212,7 +264,7 @@ HTML_PAGE = """
       border-radius: 12px;
       border: 1px solid var(--color-border);
       box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
-      padding: 24px;
+      padding: 16px;
       transition: all 0.3s ease;
     }
 
@@ -221,17 +273,18 @@ HTML_PAGE = """
       font-size: 18px;
       font-weight: 700;
       color: var(--color-primary);
-      margin-bottom: 20px;
-      padding-bottom: 8px;
+      margin-bottom: 10px;
+      padding-bottom: 6px;
       border-bottom: 2px solid var(--color-primary-light);
     }
 
     .sidebar-tabs {
       display: flex;
+      height: 44px;
+      min-height: 44px;
       background: #e2e8f0;
       padding: 4px;
       border-radius: 8px;
-      margin-bottom: 12px;
     }
 
     .sidebar-tab-btn {
@@ -255,23 +308,102 @@ HTML_PAGE = """
 
     .sidebar-pane {
       display: none;
+      min-height: 0;
     }
 
     .sidebar-pane.active {
-      display: block;
+      display: flex;
+      flex-direction: column;
       animation: fadeIn 0.2s ease;
+    }
+
+    #generate-sidebar.active {
+      flex: 1 1 auto;
+      overflow: hidden;
+    }
+
+    #check-sidebar.active {
+      flex: 0 0 auto;
+      overflow-y: auto;
+    }
+
+    #generate-form,
+    #check-form {
+      flex: 1 1 auto;
+      min-height: 0;
+      overflow-y: auto;
+      padding-right: 2px;
+      gap: 10px;
+      justify-content: space-between;
+    }
+
+    #generate-sidebar,
+    #check-sidebar {
+      padding: 16px;
+    }
+
+    #generate-sidebar .card-title,
+    #check-sidebar .card-title {
+      margin-bottom: 10px;
+      padding-bottom: 6px;
+    }
+
+    #generate-form .form-group,
+    #check-form .form-group {
+      gap: 4px;
+    }
+
+    #generate-form .form-row,
+    #check-form .form-row {
+      gap: 12px;
+    }
+
+    #generate-form label,
+    #check-form label {
+      font-size: 13px;
+    }
+
+    #generate-form input[type="text"],
+    #generate-form input[type="number"],
+    #generate-form select,
+    #check-form input[type="text"],
+    #check-form input[type="number"],
+    #check-form select {
+      min-height: 36px;
+      padding: 7px 10px;
+      font-size: 13px;
+      border-radius: 8px;
+    }
+
+    #generate-form .checkbox-group,
+    #check-form .checkbox-group {
+      gap: 8px;
+      min-height: 22px;
+      font-size: 13px;
+    }
+
+    #generate-form .checkbox-group input,
+    #check-form .checkbox-group input {
+      width: 15px;
+      height: 15px;
+    }
+
+    #generate-form button.btn-primary,
+    #check-form button.btn-primary {
+      min-height: 38px;
+      padding: 9px 12px;
     }
 
     form {
       display: flex;
       flex-direction: column;
-      gap: 16px;
+      gap: 9px;
     }
 
     .form-group {
       display: flex;
       flex-direction: column;
-      gap: 6px;
+      gap: 4px;
     }
 
     .form-row {
@@ -290,7 +422,7 @@ HTML_PAGE = """
     input[type="number"],
     select {
       width: 100%;
-      padding: 10px 12px;
+      padding: 7px 10px;
       border: 1.5px solid var(--color-border);
       border-radius: 8px;
       font-size: 14px;
@@ -330,7 +462,7 @@ HTML_PAGE = """
       background: var(--color-primary);
       color: white;
       border: none;
-      padding: 12px;
+      padding: 9px 12px;
       border-radius: 8px;
       font-size: 14px;
       font-weight: 600;
@@ -353,39 +485,54 @@ HTML_PAGE = """
     .content-area {
       display: flex;
       flex-direction: column;
-      gap: 20px;
+      gap: 12px;
+      min-width: 0;
+      min-height: 0;
+      overflow: hidden;
     }
 
     .content-tabs {
       display: flex;
-      border-bottom: 2px solid var(--color-border);
-      gap: 16px;
+      flex: 0 0 auto;
+      height: 44px;
+      min-height: 44px;
+      background: #e2e8f0;
+      padding: 4px;
+      border-radius: 8px;
+      gap: 4px;
     }
 
     .content-tab-btn {
+      flex: 1;
       border: none;
       background: transparent;
-      padding: 12px 16px;
-      font-size: 16px;
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 14px;
       font-weight: 600;
       cursor: pointer;
       color: var(--color-text-muted);
-      border-bottom: 3px solid transparent;
       transition: all 0.2s ease;
-      font-family: var(--font-serif);
+      font-family: var(--font-sans);
     }
 
     .content-tab-btn.active {
+      background: var(--color-card-bg);
       color: var(--color-primary);
-      border-bottom-color: var(--color-primary);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
     }
 
     .tab-content {
       display: none;
+      min-height: 0;
     }
 
     .tab-content.active {
-      display: block;
+      display: flex;
+      flex-direction: column;
+      flex: 1 1 auto;
+      min-height: 0;
+      overflow: hidden;
       animation: fadeIn 0.3s ease;
     }
 
@@ -399,6 +546,7 @@ HTML_PAGE = """
       padding: 12px 16px;
       border-radius: 8px;
       font-size: 14px;
+      flex: 0 0 auto;
       display: none;
     }
 
@@ -419,34 +567,78 @@ HTML_PAGE = """
     /* Results Table */
     .table-container {
       width: 100%;
-      overflow-x: auto;
+      flex: 1 1 auto;
+      min-height: 0;
+      max-height: 100%;
+      overflow: auto;
       border-radius: 12px;
       border: 1px solid var(--color-border);
       box-shadow: 0 4px 6px rgba(0,0,0,0.01);
       background: var(--color-card-bg);
+      clip-path: inset(0 round 12px);
     }
 
     table {
       width: 100%;
+      min-width: 760px;
       border-collapse: collapse;
       text-align: left;
     }
 
     th {
       background: #f8fafc;
-      padding: 14px 18px;
+      padding: 12px 14px;
       font-size: 13px;
       font-weight: 600;
       color: #475569;
       border-bottom: 2px solid var(--color-border);
       white-space: nowrap;
+      position: sticky;
+      top: 0;
+      z-index: 2;
+    }
+
+    th:first-child {
+      border-top-left-radius: 12px;
+    }
+
+    th:last-child {
+      border-top-right-radius: 12px;
     }
 
     td {
-      padding: 14px 18px;
-      font-size: 14px;
+      padding: 12px 14px;
+      font-size: 13px;
       border-bottom: 1px solid var(--color-border);
       vertical-align: middle;
+    }
+
+    th:first-child,
+    td:first-child {
+      width: 150px;
+    }
+
+    th:nth-child(2),
+    td:nth-child(2),
+    th:nth-child(3),
+    td:nth-child(3) {
+      width: 72px;
+      white-space: nowrap;
+    }
+
+    th:nth-child(4),
+    td:nth-child(4) {
+      max-width: 180px;
+    }
+
+    th:nth-child(5),
+    td:nth-child(5) {
+      max-width: 280px;
+    }
+
+    td:nth-child(4),
+    td:nth-child(5) {
+      overflow-wrap: anywhere;
     }
 
     tr:last-child td {
@@ -461,7 +653,7 @@ HTML_PAGE = """
     .name-badge {
       display: inline-block;
       font-family: var(--font-serif);
-      font-size: 16px;
+      font-size: 15px;
       font-weight: 700;
       color: var(--color-primary);
       background-color: var(--color-primary-light);
@@ -519,7 +711,10 @@ HTML_PAGE = """
     .wuge-layout {
       display: flex;
       flex-direction: column;
-      gap: 24px;
+      gap: 14px;
+      min-height: 0;
+      overflow-y: auto;
+      padding-right: 2px;
       animation: fadeIn 0.3s ease;
     }
 
@@ -528,7 +723,7 @@ HTML_PAGE = """
       align-items: center;
       gap: 20px;
       background: var(--color-card-bg);
-      padding: 20px 24px;
+      padding: 16px 20px;
       border-radius: 12px;
       border: 1px solid var(--color-border);
       border-left: 5px solid var(--color-primary);
@@ -542,7 +737,7 @@ HTML_PAGE = """
 
     .wuge-header-title {
       font-family: var(--font-serif);
-      font-size: 24px;
+      font-size: 22px;
       font-weight: 700;
       color: var(--color-primary);
     }
@@ -557,14 +752,14 @@ HTML_PAGE = """
     .wuge-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 16px;
+      gap: 12px;
     }
 
     .wuge-card {
       background: var(--color-card-bg);
       border: 1px solid var(--color-border);
       border-radius: 12px;
-      padding: 20px;
+      padding: 16px;
       display: flex;
       flex-direction: column;
       gap: 10px;
@@ -608,7 +803,7 @@ HTML_PAGE = """
 
     .wuge-card-value {
       font-family: var(--font-serif);
-      font-size: 32px;
+      font-size: 28px;
       font-weight: 700;
       color: var(--color-text);
       display: flex;
@@ -627,6 +822,9 @@ HTML_PAGE = """
     /* Resources Section in Check Result */
     .wuge-resources {
       margin-top: 12px;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
     }
 
     .wuge-resources h3 {
@@ -672,11 +870,17 @@ HTML_PAGE = """
 
     /* Empty state placeholder */
     .empty-state {
+      width: 100%;
+      min-height: 280px;
       text-align: center;
-      padding: 80px 20px;
+      padding: 36px 20px;
       color: var(--color-text-muted);
       border-style: dashed;
       border-width: 2px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
     }
 
     .empty-state svg {
@@ -694,11 +898,53 @@ HTML_PAGE = """
 
     footer {
       text-align: center;
-      margin-top: 40px;
-      padding: 24px 0;
+      flex: 0 0 auto;
+      padding: 8px 0 0;
       font-size: 12px;
       color: var(--color-text-muted);
-      border-top: 1px solid var(--color-border);
+    }
+
+    @media (max-width: 900px) {
+      body {
+        height: auto;
+        min-height: 100vh;
+        overflow: auto;
+        padding: 14px;
+      }
+
+      .container {
+        min-height: auto;
+      }
+
+      header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+      }
+
+      main {
+        grid-template-columns: 1fr;
+        overflow: visible;
+      }
+
+      .sidebar,
+      .content-area,
+      .wuge-layout {
+        height: auto;
+        overflow: visible;
+      }
+
+      .tab-content.active {
+        display: block;
+      }
+
+      .table-container {
+        max-height: 60vh;
+      }
+
+      footer {
+        padding: 16px 0 0;
+      }
     }
   </style>
 </head>
@@ -805,16 +1051,27 @@ HTML_PAGE = """
           </form>
         </div>
 
-        <!-- 数据库状态卡片 -->
-        <div class="card" id="system-health-card" style="padding: 16px; font-size: 12px; color: var(--color-text-muted);">
-          <div style="font-weight: 700; color: var(--color-primary); margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--color-primary-light); padding-bottom: 4px;">
+        <div class="card health-card" id="check-health-card">
+          <div class="health-card-title">
             <span>本地索引状态</span>
-            <span id="health-status-dot" style="width: 8px; height: 8px; background: #cbd5e1; border-radius: 50%; display: inline-block;"></span>
+            <span class="health-status-dot"></span>
           </div>
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px;">
-            <div>名著文献：<span id="stat-sources" style="font-weight:600; color:var(--color-text);">-</span> 篇</div>
-            <div>汉字检索：<span id="stat-chars" style="font-weight:600; color:var(--color-text);">-</span> 个</div>
-            <div style="grid-column: span 2;">常见姓名比对库：<span id="stat-names" style="font-weight:600; color:var(--color-text);">-</span> 条</div>
+          <div class="health-stats">
+            <div>名著文献：<span class="health-stat-value stat-sources">-</span> 篇</div>
+            <div>汉字检索：<span class="health-stat-value stat-chars">-</span> 个</div>
+            <div>常见姓名比对库：<span class="health-stat-value stat-names">-</span> 条</div>
+          </div>
+        </div>
+
+        <div class="card health-card" id="generate-health-card">
+          <div class="health-card-title">
+            <span>本地索引状态</span>
+            <span class="health-status-dot"></span>
+          </div>
+          <div class="health-stats">
+            <div>名著文献：<span class="health-stat-value stat-sources">-</span> 篇</div>
+            <div>汉字检索：<span class="health-stat-value stat-chars">-</span> 个</div>
+            <div>常见姓名比对库：<span class="health-stat-value stat-names">-</span> 条</div>
           </div>
         </div>
       </div>
@@ -934,6 +1191,14 @@ HTML_PAGE = """
     function switchSidebarTab(tab) {
       document.getElementById('generate-sidebar').classList.toggle('active', tab === 'generate');
       document.getElementById('check-sidebar').classList.toggle('active', tab === 'check');
+      const generateHealthCard = document.getElementById('generate-health-card');
+      if (generateHealthCard) {
+        generateHealthCard.style.display = tab === 'generate' ? 'block' : 'none';
+      }
+      const checkHealthCard = document.getElementById('check-health-card');
+      if (checkHealthCard) {
+        checkHealthCard.style.display = tab === 'check' ? 'block' : 'none';
+      }
       
       const btns = document.querySelectorAll('.sidebar-tab-btn');
       btns[0].classList.toggle('active', tab === 'generate');
@@ -955,7 +1220,12 @@ HTML_PAGE = """
     }
 
     function hideMessage() {
+      messageBanner.textContent = '';
       messageBanner.style.display = 'none';
+    }
+
+    function displayGender(gender) {
+      return gender && gender !== '未知' ? gender : '不限';
     }
 
     function formatSentence(sentence) {
@@ -993,12 +1263,19 @@ HTML_PAGE = """
         const response = await fetch('/api/health');
         if (response.ok) {
           const data = await response.json();
-          document.getElementById('stat-sources').textContent = Number(data.sources).toLocaleString();
-          document.getElementById('stat-chars').textContent = Number(data.sentence_chars).toLocaleString();
-          document.getElementById('stat-names').textContent = Number(data.valid_names).toLocaleString();
-          const dot = document.getElementById('health-status-dot');
-          dot.style.background = '#22c55e';
-          dot.title = '数据库已连接';
+          document.querySelectorAll('.stat-sources').forEach((node) => {
+            node.textContent = Number(data.sources).toLocaleString();
+          });
+          document.querySelectorAll('.stat-chars').forEach((node) => {
+            node.textContent = Number(data.sentence_chars).toLocaleString();
+          });
+          document.querySelectorAll('.stat-names').forEach((node) => {
+            node.textContent = Number(data.valid_names).toLocaleString();
+          });
+          document.querySelectorAll('.health-status-dot').forEach((dot) => {
+            dot.style.background = '#22c55e';
+            dot.title = '数据库已连接';
+          });
         }
       } catch (e) {
         console.error('无法加载系统状态:', e);
@@ -1077,7 +1354,7 @@ HTML_PAGE = """
         }
         
         analysisContent.style.display = 'flex';
-        showMessage(`【${name}】测算分析成功！`, 'info');
+        hideMessage();
       } catch (error) {
         showMessage(error.message, 'error');
         analysisEmpty.style.display = 'block';
@@ -1132,7 +1409,7 @@ HTML_PAGE = """
           return;
         }
 
-        showMessage(`为您找到 ${json.count} 个名字候选。点击姓名可自动进行五格吉凶测算。`, 'info');
+        hideMessage();
         
         for (const item of json.items) {
           const tr = document.createElement('tr');
@@ -1148,7 +1425,7 @@ HTML_PAGE = """
           
           // 性别
           const genderCell = document.createElement('td');
-          genderCell.textContent = item.gender || '不限';
+          genderCell.textContent = displayGender(item.gender);
           tr.appendChild(genderCell);
           
           // 笔画

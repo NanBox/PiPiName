@@ -52,7 +52,28 @@ def test_check_name_with_resource():
 def test_api_endpoints():
     client = TestClient(create_app())
 
-    assert "查看姓名" in client.get("/").text
+    home = client.get("/").text
+    assert "查看姓名" in home
+    assert "table-container" in home
+    assert "position: sticky" in home
+    assert "overflow: hidden" in home
+    assert "overflow-y: auto" in home
+    assert "为您找到" not in home
+    assert "测算分析成功" not in home
+    assert "max-height: min(260px, 40vh)" not in home
+    assert "health-stats" in home
+    assert home.count("health-card") >= 2
+    assert 'id="generate-health-card"' in home
+    assert 'id="check-health-card"' in home
+    assert "function displayGender" in home
+    assert "gender !== '未知'" in home
+    assert "#generate-sidebar.active" in home
+    assert "flex: 1 1 auto" in home
+    assert "justify-content: space-between" in home
+    assert "#check-form" in home
+    assert "#check-sidebar .card-title" in home
+    assert "margin-top: auto" in home
+    assert 'id="system-health-card"' not in home
     assert client.get("/api/health").json()["ok"] is True
     sources = client.get("/api/sources").json()
     assert any(item["source"] == "shijing" for item in sources["sources"])
