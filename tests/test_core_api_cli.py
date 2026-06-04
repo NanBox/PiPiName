@@ -90,7 +90,7 @@ def test_api_endpoints():
     assert 'id="generate-health-card"' in home
     assert 'id="check-health-card"' in home
     assert "function displayGender" in home
-    assert "gender !== '未知'" in home
+    assert "!['未知', '双'].includes(gender)" in home
     assert "#generate-sidebar.active" in home
     assert "flex: 1 1 auto" in home
     assert "justify-content: space-between" in home

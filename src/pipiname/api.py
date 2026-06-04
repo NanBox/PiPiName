@@ -1308,7 +1308,7 @@ HTML_PAGE = """
     }
 
     function displayGender(gender) {
-      return gender && gender !== '未知' ? gender : '不限';
+      return gender && !['未知', '双'].includes(gender) ? gender : '不限';
     }
 
     function formatSentence(sentence) {
