@@ -55,7 +55,23 @@ def test_api_endpoints():
     home = client.get("/").text
     assert "查看姓名" in home
     assert "table-container" in home
-    assert "position: sticky" in home
+    assert "table-header" in home
+    assert "table-body" in home
+    assert "resultsTableWrapper.style.display = 'flex'" in home
+    assert "scrollbar-gutter: stable" not in home
+    assert "--table-header-height: 44px" in home
+    assert "--table-scrollbar-width: 8px" in home
+    assert "padding-right: var(--table-scrollbar-width)" in home
+    assert "height: var(--table-header-height)" in home
+    assert ".table-container::after" not in home
+    assert ".table-body::-webkit-scrollbar-thumb" in home
+    assert ".wuge-layout::-webkit-scrollbar-track" in home
+    assert ".wuge-layout::-webkit-scrollbar-thumb" in home
+    assert "scrollbar-color: rgba(148, 163, 184, 0.72) transparent" in home
+    assert "background: transparent" in home
+    assert "background-clip: padding-box" in home
+    assert "::-webkit-scrollbar-button:vertical:end:increment" in home
+    assert "clip-path: inset(0 round 12px)" not in home
     assert "overflow: hidden" in home
     assert "overflow-y: auto" in home
     assert "为您找到" not in home

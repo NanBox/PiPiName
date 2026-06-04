@@ -566,16 +566,70 @@ HTML_PAGE = """
 
     /* Results Table */
     .table-container {
+      --table-header-height: 44px;
+      --table-scrollbar-width: 8px;
       width: 100%;
       flex: 1 1 auto;
       min-height: 0;
       max-height: 100%;
-      overflow: auto;
+      overflow: hidden;
       border-radius: 12px;
       border: 1px solid var(--color-border);
       box-shadow: 0 4px 6px rgba(0,0,0,0.01);
       background: var(--color-card-bg);
-      clip-path: inset(0 round 12px);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .table-header {
+      flex: 0 0 auto;
+      overflow: hidden;
+      box-sizing: border-box;
+      padding-right: var(--table-scrollbar-width);
+      background: #f8fafc;
+      border-bottom: 2px solid var(--color-border);
+      border-top-left-radius: 12px;
+      border-top-right-radius: 12px;
+    }
+
+    .table-body {
+      flex: 1 1 auto;
+      min-height: 0;
+      overflow: auto;
+      scrollbar-color: rgba(148, 163, 184, 0.72) transparent;
+      scrollbar-width: thin;
+    }
+
+    .table-body::-webkit-scrollbar {
+      width: var(--table-scrollbar-width);
+      height: 10px;
+    }
+
+    .table-body::-webkit-scrollbar-track {
+      background: transparent;
+      border-radius: 999px;
+    }
+
+    .table-body::-webkit-scrollbar-corner {
+      background: transparent;
+    }
+
+    .table-body::-webkit-scrollbar-button:vertical:end:increment {
+      display: block;
+      height: 8px;
+      background: transparent;
+    }
+
+    .table-body::-webkit-scrollbar-thumb {
+      background: rgba(148, 163, 184, 0.72);
+      border: 2px solid transparent;
+      background-clip: padding-box;
+      border-radius: 999px;
+    }
+
+    .table-body::-webkit-scrollbar-thumb:hover {
+      background: rgba(100, 116, 139, 0.82);
+      background-clip: padding-box;
     }
 
     table {
@@ -585,17 +639,18 @@ HTML_PAGE = """
       text-align: left;
     }
 
+    .table-header table {
+      min-width: 760px;
+    }
+
     th {
       background: #f8fafc;
       padding: 12px 14px;
       font-size: 13px;
       font-weight: 600;
       color: #475569;
-      border-bottom: 2px solid var(--color-border);
       white-space: nowrap;
-      position: sticky;
-      top: 0;
-      z-index: 2;
+      height: var(--table-header-height);
     }
 
     th:first-child {
@@ -715,7 +770,29 @@ HTML_PAGE = """
       min-height: 0;
       overflow-y: auto;
       padding-right: 2px;
+      scrollbar-color: rgba(148, 163, 184, 0.72) transparent;
+      scrollbar-width: thin;
       animation: fadeIn 0.3s ease;
+    }
+
+    .wuge-layout::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .wuge-layout::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .wuge-layout::-webkit-scrollbar-thumb {
+      background: rgba(148, 163, 184, 0.72);
+      border: 2px solid transparent;
+      background-clip: padding-box;
+      border-radius: 999px;
+    }
+
+    .wuge-layout::-webkit-scrollbar-thumb:hover {
+      background: rgba(100, 116, 139, 0.82);
+      background-clip: padding-box;
     }
 
     .wuge-header {
@@ -1096,18 +1173,24 @@ HTML_PAGE = """
           </div>
           
           <div id="results-table-wrapper" class="table-container" style="display: none;">
-            <table>
-              <thead>
-                <tr>
-                  <th>姓名（可点选分析）</th>
-                  <th>性别</th>
-                  <th>笔画数</th>
-                  <th>古籍出处</th>
-                  <th>出处句子</th>
-                </tr>
-              </thead>
-              <tbody id="result-tbody"></tbody>
-            </table>
+            <div class="table-header">
+              <table>
+                <thead>
+                  <tr>
+                    <th>姓名（可点选分析）</th>
+                    <th>性别</th>
+                    <th>笔画数</th>
+                    <th>古籍出处</th>
+                    <th>出处句子</th>
+                  </tr>
+                </thead>
+              </table>
+            </div>
+            <div class="table-body">
+              <table>
+                <tbody id="result-tbody"></tbody>
+              </table>
+            </div>
           </div>
         </div>
 
@@ -1450,7 +1533,7 @@ HTML_PAGE = """
           resultTbody.appendChild(tr);
         }
         
-        resultsTableWrapper.style.display = 'block';
+        resultsTableWrapper.style.display = 'flex';
       } catch (error) {
         showMessage(error.message, 'error');
         resultsEmpty.style.display = 'block';
